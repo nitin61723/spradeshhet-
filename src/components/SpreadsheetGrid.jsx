@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-export default function SpreadsheetGrid({ gridData, setGridData }) {
+export default function SpreadsheetGrid({ gridData, setGridData, isBold, isItalic, isUnderline, isStrike, textAlign }) {
   const columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
   // Controls the premium paywall modal visibility
@@ -17,6 +17,23 @@ export default function SpreadsheetGrid({ gridData, setGridData }) {
     const updatedData = [...gridData];
     updatedData[rowIndex][colIndex] = value;
     setGridData(updatedData);
+  };
+
+  const getInputClassName = (isLocked) => {
+    const alignmentClass =
+      textAlign === 'center' ? 'text-center' : textAlign === 'right' ? 'text-right' : 'text-left';
+
+    return [
+      'w-full h-full px-3 py-1.5 text-sm outline-none border-none bg-transparent',
+      isBold ? 'font-bold' : '',
+      isItalic ? 'italic' : '',
+      isUnderline ? 'underline' : '',
+      isStrike ? 'line-through' : '',
+      alignmentClass,
+      isLocked ? 'cursor-not-allowed text-slate-600 select-none' : 'text-slate-200 focus:bg-slate-950/40',
+    ]
+      .filter(Boolean)
+      .join(' ');
   };
 
   return (
@@ -141,7 +158,7 @@ export default function SpreadsheetGrid({ gridData, setGridData }) {
                         readOnly={isLocked}
                         onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
                         onClick={() => isLocked && setShowPaywall(true)}
-                        className={`w-full h-full px-3 py-1.5 text-sm outline-none border-none bg-transparent ${isLocked ? 'cursor-not-allowed text-slate-600 select-none' : 'text-slate-200 focus:bg-slate-950/40'}`}
+                        className={getInputClassName(isLocked)}
                       />
                     </td>
                   ))}

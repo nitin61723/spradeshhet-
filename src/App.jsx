@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Toolbar from './components/Toolbar';
 import SpreadsheetGrid from './components/SpreadsheetGrid';
@@ -22,9 +22,13 @@ function loadFromStorage() {
 }
 
 export default function App() {
-  const [viewMode, setViewMode] = useState('grid');
+  const [viewMode] = useState('grid');
+  const [currentTab, setCurrentTab] = useState('Home');
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
+  const [isUnderline, setIsUnderline] = useState(false);
+  const [isStrike, setIsStrike] = useState(false);
+  const [textAlign, setTextAlign] = useState('left');
 
   // ── Effect 1: LOAD ────────────────────────────────────────────────────────
   // Runs once on mount. Restores the user's previous session from localStorage
@@ -45,6 +49,10 @@ export default function App() {
     }
   }, [sheetData]);
 
+  const handleClearSheet = () => {
+    setSheetData(EMPTY_GRID);
+  };
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
 
@@ -53,18 +61,33 @@ export default function App() {
 
       {/* 2. Formatting & Action Toolbar */}
       <Toolbar
+        currentTab={currentTab}
+        setCurrentTab={setCurrentTab}
         isBold={isBold}
         setIsBold={setIsBold}
         isItalic={isItalic}
         setIsItalic={setIsItalic}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
+        isUnderline={isUnderline}
+        setIsUnderline={setIsUnderline}
+        isStrike={isStrike}
+        setIsStrike={setIsStrike}
+        textAlign={textAlign}
+        setTextAlign={setTextAlign}
+        onClearSheet={handleClearSheet}
       />
 
       {/* 3. Main Workspace — both views draw from the same synced sheetData */}
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {viewMode === 'grid' ? (
-          <SpreadsheetGrid gridData={sheetData} setGridData={setSheetData} />
+          <SpreadsheetGrid
+            gridData={sheetData}
+            setGridData={setSheetData}
+            isBold={isBold}
+            isItalic={isItalic}
+            isUnderline={isUnderline}
+            isStrike={isStrike}
+            textAlign={textAlign}
+          />
         ) : (
           <DashboardCanvas gridData={sheetData} />
         )}
