@@ -66,30 +66,48 @@ export default function Toolbar({
       viewMode === mode ? activeButtonClass : idleButtonClass
     }`;
 
+  const headerViewButtonClass = (mode) =>
+    `h-7 shrink-0 rounded-md px-3 text-xs font-semibold transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 ${
+      viewMode === mode
+        ? 'bg-indigo-600 text-white shadow-sm'
+        : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-200'
+    }`;
+
   return (
     <div className="w-full border-b border-slate-800 bg-slate-950/95 text-slate-200 shadow-sm">
-      <div className="flex min-h-10 items-end gap-1 overflow-x-auto border-b border-slate-800/90 px-3 pt-1">
-        {RIBBON_TABS.map((tab) => {
-          const isActive = currentTab === tab;
+      <div className="flex min-h-10 items-end gap-3 border-b border-slate-800/90 px-3 pt-1">
+        <div className="flex flex-1 items-end gap-1 overflow-x-auto">
+          {RIBBON_TABS.map((tab) => {
+            const isActive = currentTab === tab;
 
-          return (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setCurrentTab(tab)}
-              className={`relative h-9 shrink-0 px-3 text-xs font-medium transition-colors duration-150 focus:outline-none ${
-                isActive ? 'text-white' : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              {tab}
-              <span
-                className={`absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-emerald-500 transition-opacity duration-150 ${
-                  isActive ? 'opacity-100' : 'opacity-0'
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setCurrentTab(tab)}
+                className={`relative h-9 shrink-0 px-3 text-xs font-medium transition-colors duration-150 focus:outline-none ${
+                  isActive ? 'text-white' : 'text-slate-400 hover:text-slate-200'
                 }`}
-              />
-            </button>
-          );
-        })}
+              >
+                {tab}
+                <span
+                  className={`absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-emerald-500 transition-opacity duration-150 ${
+                    isActive ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mb-1 flex shrink-0 items-center gap-1 rounded-lg border border-slate-800 bg-slate-950 p-1">
+          <button type="button" onClick={() => setViewMode('grid')} className={headerViewButtonClass('grid')}>
+            📊 Grid Sheet
+          </button>
+          <button type="button" onClick={() => setViewMode('dashboard')} className={headerViewButtonClass('dashboard')}>
+            📈 Dashboard Canvas
+          </button>
+        </div>
       </div>
 
       {currentTab === 'Home' && (
