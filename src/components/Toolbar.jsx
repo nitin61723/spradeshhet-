@@ -40,6 +40,11 @@ export default function Toolbar({
   onClearSheet,
   viewMode,
   setViewMode,
+  onUndo,
+  onRedo,
+  onPrint,
+  canUndo,
+  canRedo,
 }) {
   const isFormattingTab = currentTab === 'Format' || currentTab === 'Home';
 
@@ -95,6 +100,35 @@ export default function Toolbar({
       <div className="flex items-center justify-between gap-4 border-b border-slate-800 bg-slate-900 px-4 py-2">
         {isFormattingTab ? (
           <div className="flex flex-wrap items-center gap-2">
+            <section className="flex items-center gap-1 border-r border-slate-800 pr-2">
+              <button
+                type="button"
+                onClick={onUndo}
+                disabled={!canUndo}
+                className={`${toolButtonBase} ${idleToolButton} ${!canUndo ? 'cursor-not-allowed opacity-40' : ''}`}
+                title="Undo"
+              >
+                ↶ Undo
+              </button>
+              <button
+                type="button"
+                onClick={onRedo}
+                disabled={!canRedo}
+                className={`${toolButtonBase} ${idleToolButton} ${!canRedo ? 'cursor-not-allowed opacity-40' : ''}`}
+                title="Redo"
+              >
+                ↷ Redo
+              </button>
+              <button
+                type="button"
+                onClick={onPrint}
+                className={`${toolButtonBase} ${idleToolButton}`}
+                title="Print"
+              >
+                🖨️ Print
+              </button>
+            </section>
+
             <section className="flex items-center gap-1 border-r border-slate-700 pr-2">
               <button
                 type="button"
