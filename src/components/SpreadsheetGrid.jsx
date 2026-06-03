@@ -10,6 +10,10 @@ export default function SpreadsheetGrid({
   textAlign,
   numberFormat,
   decimalPlaces,
+  fontFamily = 'font-sans',
+  fontSize = 'text-sm',
+  textColor = 'text-slate-200',
+  fillColor = 'bg-slate-900',
 }) {
   const columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   const [showPaywall, setShowPaywall] = useState(false);
@@ -32,6 +36,24 @@ export default function SpreadsheetGrid({
 
   const alignmentClass =
     textAlign === 'center' ? 'text-center' : textAlign === 'right' ? 'text-right' : 'text-left';
+
+  const getCellClassName = (isLocked) =>
+    `border border-slate-800 p-0 ${
+      isLocked
+        ? 'cursor-not-allowed bg-slate-900/30'
+        : `${fillColor} focus-within:z-10 focus-within:ring-2 focus-within:ring-indigo-500`
+    }`;
+
+  const getInputClassName = (isLocked) =>
+    `w-full h-full px-3 py-1.5 outline-none border-none bg-transparent ${fontFamily} ${fontSize} ${
+      isBold ? 'font-bold' : ''
+    } ${isItalic ? 'italic' : ''} ${isUnderline ? 'underline' : ''} ${
+      isStrike ? 'line-through' : ''
+    } ${alignmentClass} ${
+      isLocked
+        ? 'cursor-not-allowed select-none text-slate-600'
+        : `${textColor} focus:bg-slate-950/40`
+    }`;
 
   const formatCellValue = (value) => {
     const rawValue = String(value ?? '').trim();
@@ -167,11 +189,7 @@ export default function SpreadsheetGrid({
                     return (
                       <td
                         key={colIndex}
-                        className={`border border-slate-800 p-0 ${
-                          isLocked
-                            ? 'cursor-not-allowed bg-slate-900/30'
-                            : 'bg-slate-900 focus-within:z-10 focus-within:ring-2 focus-within:ring-indigo-500'
-                        }`}
+                        className={getCellClassName(isLocked)}
                       >
                         <input
                           type="text"
@@ -181,15 +199,7 @@ export default function SpreadsheetGrid({
                           onBlur={() => setEditingCell(null)}
                           onChange={(event) => handleCellChange(rowIndex, colIndex, event.target.value)}
                           onClick={() => isLocked && setShowPaywall(true)}
-                          className={`w-full h-full px-3 py-1.5 text-sm outline-none border-none bg-transparent ${
-                            isBold ? 'font-bold' : ''
-                          } ${isItalic ? 'italic' : ''} ${isUnderline ? 'underline' : ''} ${
-                            isStrike ? 'line-through' : ''
-                          } ${alignmentClass} ${
-                            isLocked
-                              ? 'cursor-not-allowed select-none text-slate-600'
-                              : 'text-slate-200 focus:bg-slate-950/40'
-                          }`}
+                          className={getInputClassName(isLocked)}
                         />
                       </td>
                     );
