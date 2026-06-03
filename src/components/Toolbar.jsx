@@ -45,6 +45,10 @@ export default function Toolbar({
   onPrint,
   canUndo,
   canRedo,
+  numberFormat,
+  setNumberFormat,
+  decimalPlaces,
+  setDecimalPlaces,
 }) {
   const isFormattingTab = currentTab === 'Format' || currentTab === 'Home';
 
@@ -199,6 +203,56 @@ export default function Toolbar({
               >
                 <AlignmentIcon align="right" />
               </button>
+            </section>
+
+            <section className="flex items-center gap-1 border-r border-slate-800 pr-2">
+              <button
+                type="button"
+                onClick={() => setNumberFormat('Currency')}
+                className={`${toolButtonBase} ${numberFormat === 'Currency' ? activeToolButton : idleToolButton}`}
+                title="Currency format"
+                aria-pressed={numberFormat === 'Currency'}
+              >
+                $ / ₹
+              </button>
+              <button
+                type="button"
+                onClick={() => setNumberFormat('Percent')}
+                className={`${toolButtonBase} ${numberFormat === 'Percent' ? activeToolButton : idleToolButton}`}
+                title="Percent format"
+                aria-pressed={numberFormat === 'Percent'}
+              >
+                %
+              </button>
+              <button
+                type="button"
+                onClick={() => setDecimalPlaces((prev) => Math.max(0, prev - 1))}
+                className={`${toolButtonBase} ${idleToolButton}`}
+                title="Decrease decimal places"
+              >
+                .00 → .0
+              </button>
+              <button
+                type="button"
+                onClick={() => setDecimalPlaces((prev) => prev + 1)}
+                className={`${toolButtonBase} ${idleToolButton}`}
+                title="Increase decimal places"
+              >
+                .0 → .00
+              </button>
+              <select
+                value={numberFormat === 'Scientific' ? 'Scientific' : 'Normal'}
+                onChange={(event) => setNumberFormat(event.target.value)}
+                className="h-8 rounded border border-slate-800 bg-slate-950/50 px-2 text-xs font-semibold text-slate-300 outline-none transition-colors hover:border-slate-600 hover:bg-slate-800 focus:ring-2 focus:ring-emerald-500/40"
+                title="More Formats"
+                aria-label="More Formats"
+              >
+                <option value="Normal">123 Normal</option>
+                <option value="Scientific">123 Scientific</option>
+              </select>
+              <span className="px-1 text-[10px] font-medium text-slate-500">
+                {decimalPlaces} dp
+              </span>
             </section>
 
             <section className="flex min-w-0 items-center">

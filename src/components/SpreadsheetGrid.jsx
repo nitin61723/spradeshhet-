@@ -1,8 +1,19 @@
 import { useState } from 'react';
 
-export default function SpreadsheetGrid({ gridData, setGridData, isBold, isItalic, isUnderline, isStrike, textAlign }) {
+export default function SpreadsheetGrid({
+  gridData,
+  setGridData,
+  isBold,
+  isItalic,
+  isUnderline,
+  isStrike,
+  textAlign,
+  numberFormat,
+  decimalPlaces,
+}) {
   const columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   const [showPaywall, setShowPaywall] = useState(false);
+  const [editingCell, setEditingCell] = useState(null);
 
   const handleCellChange = (rowIndex, colIndex, value) => {
     if (rowIndex >= 10) {
@@ -21,6 +32,28 @@ export default function SpreadsheetGrid({ gridData, setGridData, isBold, isItali
 
   const alignmentClass =
     textAlign === 'center' ? 'text-center' : textAlign === 'right' ? 'text-right' : 'text-left';
+
+  const formatCellValue = (value) => {
+    const rawValue = String(value ?? '').trim();
+    if (rawValue === '') return value;
+
+    const numericValue = Number(rawValue);
+    if (!Number.isFinite(numericValue)) return value;
+
+    if (numberFormat === 'Currency') {
+      return `$${numericValue.toFixed(decimalPlaces)}`;
+    }
+
+    if (numberFormat === 'Percent') {
+      return `${(numericValue * 100).toFixed(decimalPlaces)}%`;
+    }
+
+    if (numberFormat === 'Scientific') {
+      return numericValue.toExponential(decimalPlaces);
+    }
+
+    return numericValue.toFixed(decimalPlaces);
+  };
 
   return (
     <div className="flex-1 w-full h-full p-4 overflow-auto bg-slate-950 flex flex-col min-h-0">
@@ -126,33 +159,41 @@ export default function SpreadsheetGrid({ gridData, setGridData, isBold, isItali
                     {isLocked ? 'Locked' : rowIndex + 1}
                   </td>
 
-                  {row.map((cellValue, colIndex) => (
-                    <td
-                      key={colIndex}
-                      className={`border border-slate-800 p-0 ${
-                        isLocked
-                          ? 'cursor-not-allowed bg-slate-900/30'
-                          : 'bg-slate-900 focus-within:z-10 focus-within:ring-2 focus-within:ring-indigo-500'
-                      }`}
-                    >
-                      <input
-                        type="text"
-                        value={cellValue}
-                        readOnly={isLocked}
-                        onChange={(event) => handleCellChange(rowIndex, colIndex, event.target.value)}
-                        onClick={() => isLocked && setShowPaywall(true)}
-                        className={`w-full h-full px-3 py-1.5 text-sm outline-none border-none bg-transparent ${
-                          isBold ? 'font-bold' : ''
-                        } ${isItalic ? 'italic' : ''} ${isUnderline ? 'underline' : ''} ${
-                          isStrike ? 'line-through' : ''
-                        } ${alignmentClass} ${
+                  {row.map((cellValue, colIndex) => {
+                    const isEditing =
+                      editingCell?.rowIndex === rowIndex && editingCell?.colIndex === colIndex;
+                    const displayedValue = isEditing ? cellValue : formatCellValue(cellValue);
+
+                    return (
+                      <td
+                        key={colIndex}
+                        className={`border border-slate-800 p-0 ${
                           isLocked
-                            ? 'cursor-not-allowed select-none text-slate-600'
-                            : 'text-slate-200 focus:bg-slate-950/40'
+                            ? 'cursor-not-allowed bg-slate-900/30'
+                            : 'bg-slate-900 focus-within:z-10 focus-within:ring-2 focus-within:ring-indigo-500'
                         }`}
-                      />
-                    </td>
-                  ))}
+                      >
+                        <input
+                          type="text"
+                          value={displayedValue}
+                          readOnly={isLocked}
+                          onFocus={() => !isLocked && setEditingCell({ rowIndex, colIndex })}
+                          onBlur={() => setEditingCell(null)}
+                          onChange={(event) => handleCellChange(rowIndex, colIndex, event.target.value)}
+                          onClick={() => isLocked && setShowPaywall(true)}
+                          className={`w-full h-full px-3 py-1.5 text-sm outline-none border-none bg-transparent ${
+                            isBold ? 'font-bold' : ''
+                          } ${isItalic ? 'italic' : ''} ${isUnderline ? 'underline' : ''} ${
+                            isStrike ? 'line-through' : ''
+                          } ${alignmentClass} ${
+                            isLocked
+                              ? 'cursor-not-allowed select-none text-slate-600'
+                              : 'text-slate-200 focus:bg-slate-950/40'
+                          }`}
+                        />
+                      </td>
+                    );
+                  })}
                 </tr>
               );
             })}
